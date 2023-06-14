@@ -1,10 +1,13 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const itemsRouter = require('./routes/items');
+const chatRouter = require('./routes/chat');
 const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
+
+app.use(express.json());
 
 const corsOptions = {
   origin: 'http://localhost:3000'
@@ -22,6 +25,8 @@ mongoose.connect('mongodb://localhost/reusable-project', {
 });
 
 app.use('/api/items', itemsRouter);
+app.use('/api/chat', chatRouter);
+
 
 const PORT = process.env.PORT || 8123; // use the port defined in environment variable or 5000
 app.listen(PORT, () => {
