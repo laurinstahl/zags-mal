@@ -1,3 +1,12 @@
+:root {
+  font-family: 'Nunito Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --main-bg-color: #D9FE52;
+  --secondary-bg-color: #FDFDFD;
+  --tertiary-bg-color: #F2F2F2;
+  --main-text-color: #000000;
+  --secondary-text-color: darkgrey;
+}
+
 section {
   font-family: 'Nunito Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-size: 14px;
@@ -130,4 +139,70 @@ button + button {
 .storybook-button--large {
   font-size: 16px;
   padding: 12px 24px;
+}
+
+.chatbubble {
+  /* shared styles for all chat bubbles here */
+  border-radius: 20px;
+  margin: 10px;
+  padding: 16px;
+  max-width: 80%;
+  display: flex;
+  align-items: flex-start;
+}
+
+.chatbubble .chatbubble-image {
+  height: 1em; /* adjust as needed */
+  width: auto; /* maintain aspect ratio */
+  margin-right: 10px; /* space between image and text */
+}
+
+.chatbubble-primary {
+  /* styles for chat bubbles from ChatGPT */
+  background-color: var(--main-bg-color)/* your theme's main color */;
+  color: var(--main-text-color)/* a suitable color for the text */;
+  /* align-self: flex-start; */
+
+}
+
+.chatbubble-secondary {
+  /* styles for chat bubbles from the user */
+  background-color: var(--secondary-bg-color)/* your theme's secondary color */;
+  color: var(--main-text-color)/* a suitable color for the text */;
+  /* align-self: flex-end; */
+
+}
+
+.box{
+  background-color: var(--tertiary-bg-color);
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* take full height of the viewport */
+}
+
+.input-field {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 8px;
+  background-color: var(--main-bg-color);
+  padding: 8px;
+  flex-shrink: 0; /* prevent this from shrinking */
+}
+
+.input-text {
+  flex-grow: 1;
+  margin-right: 10px;
+  overflow: auto;
+  max-height: 120px;
+}
+
+.send-button,
+.record-button {
+  margin-left: 10px;
+}
+
+.messages{
+  overflow-y: auto; /* enable scrolling */
+  flex-grow: 1; /* take all available space */
 }

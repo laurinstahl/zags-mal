@@ -5,7 +5,7 @@ import { ChakraProvider, Box } from '@chakra-ui/react';
 import { theme, Button, IconButton, Alert }   from './theme/index';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 // import { ItemList, ItemDetails } from './pages/index';
-import {ItemDetails, ItemList} from './pages/index.js';
+import {ItemDetails, ItemList, Chat} from './pages/index.js';
 
 function App() {
 
@@ -27,6 +27,7 @@ function App() {
         <Routes>
           <Route exact path="/" element={<ItemList/>} />
           <Route exact path="/id/:id" element={<ItemDetails/>} />
+          <Route exact path="/chat" element={<Chat/>} />
         </Routes>
       </Router>
       </ChakraProvider>
