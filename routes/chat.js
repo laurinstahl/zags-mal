@@ -3,6 +3,10 @@ const router = express.Router();
 const axios = require('axios');
 const { Configuration, OpenAIApi } = require("openai");
 
+let conversationHistory = [
+  {"role": "system", "content": "Du bist ein Deutschlehrer. Du verstehst kein Englisch und antwortest nur deutschen Nachrichten. Versuche relativ kurz und knapp zu antworten (maximal 3 Sätze) und versuche immer mit Fragen zu enden. Du sprichst mit einem Deutschanfänger"}
+];
+
 router.post('/', async (req, res) => {
   try {
     const configuration = new Configuration({
@@ -10,14 +14,14 @@ router.post('/', async (req, res) => {
     });
     const openai = new OpenAIApi(configuration);
     const chatInput = req.body;
-    console.log(req.body);
+
+    // Add the user's message to the conversation history
+    conversationHistory.push({role: "user", content: chatInput.message});
+
     // API request to ChatGPT
     const completion = await openai.createChatCompletion({
       model: "gpt-3.5-turbo",
-      messages: [
-        {"role": "system", "content": "Du bist ein Deutschlehrer. Du verstehst kein Englisch und antwortest nur deutschen Nachrichten.."}, 
-        {role: "user", content: chatInput.message}
-      ],
+      messages: conversationHistory,
     });
 
     // console.log(completion.data);

@@ -2,14 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import '../css/theme.css';
 import { Box } from '@chakra-ui/react';
+import axios from 'axios'; // make sure to install and import axios
 
 /**
  * Input field with send and microphone button for user interaction
  */
-export const InputField = ({ onSend, onRecord, ...props }) => {
+export const InputField = ({ onSend, isLoading, ...props }) => {
   const [message, setMessage] = React.useState('');
   const [processing, setProcessing] = React.useState(false);
   const [recording, setRecording] = React.useState(false);
+  const [chunks, setChunks] = React.useState([]);
   const [mediaRecorder, setMediaRecorder] = React.useState(null);
   const [loadingText, setLoadingText] = React.useState('');
   const textareaRef = React.useRef(null);
@@ -28,36 +30,53 @@ export const InputField = ({ onSend, onRecord, ...props }) => {
 
 
   const handleSend = () => {
-    if(message.trim() !== ''){
+    if(message.trim() !== '' & !isLoading){
       onSend(message);
       setMessage('');
     }
   };
 
   const handleKeyDown = (event) => {
+    if (isLoading) {
+      return;
+    }
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
       handleSend();
     }
   };
 
+  const handleDataAvailable = (e) => {
+    setChunks((prev) => [...prev, e.data]);
+  };
+
+  const handleStop = async () => {
+    const blob = new Blob(chunks, { 'type' : 'audio/webm; codecs=opus' });
+    setChunks([]);
+    setProcessing(true);
+    const data = new FormData();
+    data.append('file', blob);
+    try {
+      const response = await axios.post('http://localhost:8123/api/transcribe', data);
+      setMessage(response.data.text);
+    } catch (error) {
+      console.error('Error sending audio file:', error);
+    }
+    setProcessing(false);
+  };
+
   const handleRecord = async () => {
-    if (!recording) {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        const mediaRecorder = new MediaRecorder(stream);
-        mediaRecorder.start();
-        setMediaRecorder(mediaRecorder);
-        setRecording(true);
-      } catch (err) {
-        console.error('Failed to start recording', err);
-      }
-    } else {
+    if (!mediaRecorder || mediaRecorder.state === 'inactive') {
+      setRecording(true);
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorder.ondataavailable = handleDataAvailable;
+      mediaRecorder.onstop = handleStop;
+      mediaRecorder.start();
+      setMediaRecorder(mediaRecorder);
+    } else if (mediaRecorder.state === 'recording') {
       mediaRecorder.stop();
       setRecording(false);
-      // Simulate processing delay
-      setProcessing(true);
-      setTimeout(() => setProcessing(false), 3000);  // Remove this when real processing is implemented
     }
   };
 
@@ -75,7 +94,7 @@ export const InputField = ({ onSend, onRecord, ...props }) => {
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyDown}
           className="input-text"
-          disabled={processing}
+          disabled={processing || isLoading}
           {...props}
         />
         <button onClick={handleSend} className="send-button" disabled={message.trim() === ''}>Send</button>
