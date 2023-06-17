@@ -186,7 +186,7 @@ function Chat(){
         
         <div ref={messagesEndRef} />
       </div>
-      <InputField onSend={handleSend} disabled={isLoading}  />
+      <InputField onSend={handleSend} disabled={isLoading} />
     </div>
   );
 };

@@ -11,7 +11,7 @@ export const ChatBubble = ({ profileImg, message, isUser, timestamp, hiddenMessa
 
   //handle loading dots
   const [loadingDots, setLoadingDots] = React.useState('...');
-  console.log(isLoading);
+
   React.useEffect(() => {
     if (isLoading) {
       const interval = setInterval(() => {
@@ -70,7 +70,7 @@ export const ChatBubble = ({ profileImg, message, isUser, timestamp, hiddenMessa
           {hiddenMessages.includes(message) ? <MessageSkeleton /> : <p>{message}</p>}
         </div>
         <Box display="flex" flexDirection="column" justifyContent="flex-end" height="100%">
-        {!isUser && (
+        {!isUser && !isLoading && (
           isSpeaking && speakingMessage === message
           ? <button onClick={stopSpeech}>⏸️</button>
           : <button onClick={() => startSpeech(message)}>⏯️</button>            
@@ -86,7 +86,7 @@ ChatBubble.propTypes = {
   /**
    * The message to be displayed
    */
-  message: PropTypes.string.isRequired,
+  message: PropTypes.string,
   /**
    * Is this message sent by the user?
    */
@@ -102,5 +102,6 @@ ChatBubble.propTypes = {
 };
 
 ChatBubble.defaultProps = {
-  isUser: false
+  isUser: false,
+  isLoading: false,
 };
