@@ -7,21 +7,21 @@ import axios from 'axios'; // make sure to install and import axios
 /**
  * Input field with send and microphone button for user interaction
  */
-export const InputField = ({ onSend, isLoading, ...props }) => {
+export const InputField = ({ onSend, isLoading, disabled, ...props }) => {
   const [message, setMessage] = React.useState('');
   const [processing, setProcessing] = React.useState(false);
   const [recording, setRecording] = React.useState(false);
   const [chunks, setChunks] = React.useState([]);
-  const [mediaRecorder, setMediaRecorder] = React.useState(null);
+  const mediaRecorder = React.useRef(null);
   const [loadingText, setLoadingText] = React.useState('');
   const textareaRef = React.useRef(null);
-
+  console.log(processing,disabled,processing || disabled)
   React.useEffect(() => {
     if (processing) {
       let i = 0;
       const intervalId = setInterval(() => {
         setLoadingText('.'.repeat(i++ % 4));
-      }, 500);
+      }, 200);
       return () => clearInterval(intervalId);
     } else {
       setLoadingText('');
@@ -47,35 +47,58 @@ export const InputField = ({ onSend, isLoading, ...props }) => {
   };
 
   const handleDataAvailable = (e) => {
-    setChunks((prev) => [...prev, e.data]);
+    console.log('Data available...');
+    if (e.data.size > 0) {
+      setChunks((prev) => [...prev, e.data]);
+    }
   };
 
-  const handleStop = async () => {
-    const blob = new Blob(chunks, { 'type' : 'audio/webm; codecs=opus' });
+const handleStop = () => {
+  console.log('Recording stopped...');
+  mediaRecorder.current.onstop = () => {
+    const blob = new Blob(chunks, { 'type': 'audio/webm; codecs=opus' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'audio.webm');
+    document.body.appendChild(link);
+    setProcessing(true); // Set processing to true here
+    console.log('Processing:', processing); // Add this line
+    //link.click(); we don't want to download the file
     setChunks([]);
-    setProcessing(true);
-    const data = new FormData();
-    data.append('file', blob);
-    try {
-      const response = await axios.post('http://localhost:8123/api/transcribe', data);
-      setMessage(response.data.text);
-    } catch (error) {
-      console.error('Error sending audio file:', error);
-    }
-    setProcessing(false);
+    const sendAudioToTranscribeAPI = async () => {
+      const data = new FormData();
+      data.append('file', blob, 'audio.webm');
+      for (let pair of data.entries()) {
+        console.log(pair[0] + ', ' + pair[1]);
+      }
+      try {
+        const response = await axios.post('http://localhost:8123/api/transcribe', data);
+        console.log('Response from API:', response);
+        setMessage(response.data.message.text);
+      } catch (error) {
+        console.error('Error sending audio file:', error);
+      } finally {
+        setProcessing(false);
+      }
+    };
+
+    sendAudioToTranscribeAPI();
   };
+  mediaRecorder.current.stop();
+};
 
   const handleRecord = async () => {
-    if (!mediaRecorder || mediaRecorder.state === 'inactive') {
+    if (!mediaRecorder.current || mediaRecorder.current.state === 'inactive') {
       setRecording(true);
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
-      mediaRecorder.ondataavailable = handleDataAvailable;
-      mediaRecorder.onstop = handleStop;
-      mediaRecorder.start();
-      setMediaRecorder(mediaRecorder);
-    } else if (mediaRecorder.state === 'recording') {
-      mediaRecorder.stop();
+      const newMediaRecorder = new MediaRecorder(stream);
+      newMediaRecorder.ondataavailable = handleDataAvailable;
+      newMediaRecorder.onstop = handleStop;  
+      newMediaRecorder.start(500); // Increase the timeslice duration for testing purpose
+      mediaRecorder.current = newMediaRecorder;
+    } else if (mediaRecorder.current && mediaRecorder.current.state === 'recording') {
+      handleStop();
       setRecording(false);
     }
   };
@@ -94,7 +117,7 @@ export const InputField = ({ onSend, isLoading, ...props }) => {
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyDown}
           className="input-text"
-          disabled={processing || isLoading}
+          disabled={disabled || processing}
           {...props}
         />
         <button onClick={handleSend} className="send-button" disabled={message.trim() === ''}>Send</button>
