@@ -5,29 +5,15 @@ import { ChakraProvider, Box } from '@chakra-ui/react';
 import { theme, Button, IconButton, Alert }   from './theme/index';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 // import { ItemList, ItemDetails } from './pages/index';
-import {ItemDetails, ItemList, Chat} from './pages/index.js';
+import {Chat} from './pages/index.js';
 
 function App() {
-
-  const [items, setItems] = useState([]);
-
-  useEffect(() => {
-    api.get('/api/items')
-    .then(response => {
-      setItems(response.data);
-    })
-    .catch(error => {
-      console.error(error);
-    });
-  }, []);
 
   return (
     <ChakraProvider theme={theme}>
         <Router>
         <Routes>
-          <Route exact path="/" element={<ItemList/>} />
-          <Route exact path="/id/:id" element={<ItemDetails/>} />
-          <Route exact path="/chat" element={<Chat/>} />
+          <Route exact path="/" element={<Chat/>} />
         </Routes>
       </Router>
       </ChakraProvider>
