@@ -112,7 +112,7 @@ function Chat(){
     setShowOptionButtons(false);
 
     // Send user's message to server and get response from ChatGPT
-    fetch('http://localhost:8123/api/chat', {
+    fetch('/api/chat', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

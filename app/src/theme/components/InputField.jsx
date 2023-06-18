@@ -73,7 +73,7 @@ const handleStop = () => {
         console.log(pair[0] + ', ' + pair[1]);
       }
       try {
-        const response = await axios.post('http://localhost:8123/api/transcribe', data);
+        const response = await axios.post('api/transcribe', data);
         console.log('Response from API:', response);
         setMessage(response.data.message.text);
       } catch (error) {
