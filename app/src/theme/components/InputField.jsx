@@ -56,11 +56,11 @@ export const InputField = ({ onSend, isLoading, disabled, ...props }) => {
 const handleStop = () => {
   console.log('Recording stopped...');
   mediaRecorder.current.onstop = () => {
-    const blob = new Blob(chunks, { 'type': 'audio/webm; codecs=opus' });
+    const blob = new Blob(chunks, { 'type': 'audio/mp4; codecs=mp4a' });
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', 'audio.webm');
+    link.setAttribute('download', 'audio.mp4');
     document.body.appendChild(link);
     setProcessing(true); // Set processing to true here
     console.log('Processing:', processing); // Add this line
@@ -68,7 +68,7 @@ const handleStop = () => {
     setChunks([]);
     const sendAudioToTranscribeAPI = async () => {
       const data = new FormData();
-      data.append('file', blob, 'audio.webm');
+      data.append('file', blob, 'audio.mp4');
       for (let pair of data.entries()) {
         console.log(pair[0] + ', ' + pair[1]);
       }

@@ -14,7 +14,7 @@ router.post('/', async (req, res) => {
 
     busboy.on('file', async function(fieldname, file, filename, encoding, mimetype) {
       // console.log(`Received file ${filename}`, fieldname, file, filename, encoding, mimetype);
-      const tempFilePath = path.join(os.tmpdir(), "audiofile.webm");
+      const tempFilePath = path.join(os.tmpdir(), filename.filename);
       const writeStream = fs.createWriteStream(tempFilePath);
       file.pipe(writeStream);
       writeStream.on('finish', async () => {
