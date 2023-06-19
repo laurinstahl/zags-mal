@@ -76,7 +76,7 @@ function Chat(){
     }
     // Start the new speech
     speech.text = message;
-    speech.voice = voices[0];
+    speech.voice = voices[5];
     changeEverything(voices);
     speech.rate = 1;
     setTimeout(() => {
