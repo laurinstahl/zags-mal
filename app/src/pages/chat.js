@@ -58,7 +58,9 @@ function Chat(){
           synth.getVoices().map(item => {
             i++;
             console.log(i-1,item.lang)
-            text = text+(i-1)+item.lang+"...";
+            if(i<20){
+              text = text+(i-1)+item.lang+"...";
+            }
           })
           changeEverything(text);
           clearInterval(id);
