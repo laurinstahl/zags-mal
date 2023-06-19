@@ -7,7 +7,8 @@ function Chat(){
     { sender: 'ChatGPT', message: 'Hi, worüber willst du heute sprechen?', timestamp: new Date().toISOString(), profileImg:"https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ChatGPT_logo.svg/1200px-ChatGPT_logo.svg.png" }
   ]);
   const [hiddenMessages, setHiddenMessages] = React.useState([]);
-
+  const isVariant = true;
+  const isBlurVariant = true;
   //refresh button
   const [abortController, setAbortController] = React.useState(null);
   let firstMessage = messages.length > 0 ? [messages[0]] : [];
@@ -164,6 +165,7 @@ function Chat(){
             startSpeech={startSpeech}
             stopSpeech={stopSpeech}
             speakingMessage={speakingMessage}
+            isVariant={true}
           />}
           <div className="option-buttons">
             <OptionButton text="Rollenspiel" prompt="Starte ein Rollenspiel. Such dir eine Situation aus, nehme eine Rolle ein und stelle die erste Frage." onOptionSelected={handleOptionSelected} showOptionButtons={showOptionButtons} setShowOptionButtons={setShowOptionButtons} />
@@ -189,7 +191,7 @@ function Chat(){
         
         <div ref={messagesEndRef} />
       </div>
-      <InputField onSend={handleSend} disabled={isLoading} />
+      <InputField onSend={handleSend} disabled={isLoading} isVariant={isVariant} />
     </div>
   );
 };

@@ -7,7 +7,7 @@ import axios from 'axios'; // make sure to install and import axios
 /**
  * Input field with send and microphone button for user interaction
  */
-export const InputField = ({ onSend, isLoading, disabled, ...props }) => {
+export const InputField = ({ onSend, isLoading, disabled, isVariant, ...props }) => {
   const [message, setMessage] = React.useState('');
   const [processing, setProcessing] = React.useState(false);
   const [recording, setRecording] = React.useState(false);
@@ -53,40 +53,44 @@ export const InputField = ({ onSend, isLoading, disabled, ...props }) => {
     }
   };
 
-const handleStop = () => {
-  console.log('Recording stopped...');
-  mediaRecorder.current.onstop = () => {
-    const blob = new Blob(chunks, { 'type': 'audio/mp4; codecs=mp4a' });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', 'audio.mp4');
-    document.body.appendChild(link);
-    setProcessing(true); // Set processing to true here
-    console.log('Processing:', processing); // Add this line
-    //link.click(); we don't want to download the file
-    setChunks([]);
-    const sendAudioToTranscribeAPI = async () => {
-      const data = new FormData();
-      data.append('file', blob, 'audio.mp4');
-      for (let pair of data.entries()) {
-        console.log(pair[0] + ', ' + pair[1]);
-      }
-      try {
-        const response = await axios.post('http://localhost:8123/api/transcribe', data);
-        console.log('Response from API:', response);
-        setMessage(response.data.message.text);
-      } catch (error) {
-        console.error('Error sending audio file:', error);
-      } finally {
-        setProcessing(false);
-      }
-    };
-
-    sendAudioToTranscribeAPI();
+  const handleCancel = () => {
+    setMessage('');
   };
-  mediaRecorder.current.stop();
-};
+
+  const handleStop = () => {
+    console.log('Recording stopped...');
+    mediaRecorder.current.onstop = () => {
+      const blob = new Blob(chunks, { 'type': 'audio/mp4; codecs=mp4a' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'audio.mp4');
+      document.body.appendChild(link);
+      setProcessing(true); // Set processing to true here
+      console.log('Processing:', processing); // Add this line
+      //link.click(); we don't want to download the file
+      setChunks([]);
+      const sendAudioToTranscribeAPI = async () => {
+        const data = new FormData();
+        data.append('file', blob, 'audio.mp4');
+        for (let pair of data.entries()) {
+          console.log(pair[0] + ', ' + pair[1]);
+        }
+        try {
+          const response = await axios.post('http://localhost:8123/api/transcribe', data);
+          console.log('Response from API:', response);
+          setMessage(prevMessage => isVariant ? `${prevMessage} ${response.data.message.text}` : response.data.message.text);
+        } catch (error) {
+          console.error('Error sending audio file:', error);
+        } finally {
+          setProcessing(false);
+        }
+      };
+
+      sendAudioToTranscribeAPI();
+    };
+    mediaRecorder.current.stop();
+  };
 
   const handleRecord = async () => {
     if (!mediaRecorder.current || mediaRecorder.current.state === 'inactive') {
@@ -110,18 +114,21 @@ const handleStop = () => {
 
   return (
     <Box p="16px">
-      <div className="input-field">
+      <div className={`input-field ${isVariant ? "variant" : ""}`}>
         <textarea
-          value={processing ? loadingText : message}
+          value={processing ? (isVariant ? message + loadingText : loadingText) : message}
           ref={textareaRef}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyDown}
           className="input-text"
-          disabled={disabled || processing}
+          disabled={disabled || processing || isVariant}
           {...props}
         />
-        <button onClick={handleSend} className="send-button" disabled={message.trim() === ''}>Send</button>
+        <div className={`button-box ${isVariant ? "variant" : ""}`}>
+          {isVariant && <button onClick={handleCancel} className="cancel-button">Cancel</button>}
         <button onClick={handleRecord} className="record-button">{recording ? '⏹️' : '🎙️'}</button>
+        <button onClick={handleSend} className="send-button" disabled={message.trim() === ''}>Send</button>
+        </div>
       </div>
     </Box>
   );
