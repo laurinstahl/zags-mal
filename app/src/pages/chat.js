@@ -52,17 +52,6 @@ function Chat(){
       id = setInterval(() => {
         if (synth.getVoices().length !== 0) {
           setVoices(synth.getVoices());
-          let text = "";
-          let i = 0;
-          console.log(synth.getVoices())
-          synth.getVoices().map(item => {
-            i++;
-            console.log(i-1,item.lang)
-            if(i<20){
-              text = text+(i-1)+item.lang+"...";
-            }
-          })
-          changeEverything(text);
           clearInterval(id);
         }
       }, 10);
@@ -78,17 +67,13 @@ function Chat(){
     }
     // Start the new speech
     speech.text = message;
-    speech.voice = voices[5]; //5 not bad
+    speech.voice = voices[5];
     speech.rate = 1;
     setTimeout(() => {
       window.speechSynthesis.speak(speech);
     }, 50); // delay of 50ms
     setIsSpeaking(true);
     setSpeakingMessage(message);
-  };
-
-  const changeEverything = (voices) => {
-    document.getElementsByClassName("chatbubble")[0].innerText = voices;
   };
 
   // Define a function to stop speech
