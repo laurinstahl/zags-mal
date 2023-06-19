@@ -8,7 +8,7 @@ import { Box } from '@chakra-ui/react';
  */
 export const ChatBubble = ({ profileImg, message, isUser, timestamp, hiddenMessages, setHiddenMessages, isSpeaking, startSpeech, stopSpeech, speakingMessage, isLoading, ...props }) => {
   const color = isUser ? 'chatbubble-secondary' : 'chatbubble-primary';
-
+  const isBlurVariant = true;
   //handle loading dots
   const [loadingDots, setLoadingDots] = React.useState('...');
 
@@ -30,6 +30,11 @@ export const ChatBubble = ({ profileImg, message, isUser, timestamp, hiddenMessa
         setHiddenMessages([...hiddenMessages, message]);
       }
     }
+  };
+
+  const blurStyle = {
+    filter: 'blur(3px)',  // Change this value to get the desired level of blur
+    WebkitFilter: 'blur(3px)',  // Ensure compatibility with Safari
   };
 
   //Defining the skeleton text replacement
@@ -65,15 +70,15 @@ export const ChatBubble = ({ profileImg, message, isUser, timestamp, hiddenMessa
       </Box>
       <div className={['chatbubble', color].join(' ')} {...props}>
         
-        <div onClick={handleClick} >
+      <div onClick={handleClick} style={hiddenMessages.includes(message) && isBlurVariant ? blurStyle : null} >
           {isLoading ? loadingDots : ''}
-          {hiddenMessages.includes(message) ? <MessageSkeleton /> : <p>{message}</p>}
+          {hiddenMessages.includes(message) ? (isBlurVariant ? <p>{message}</p> : <MessageSkeleton />) : <p>{message}</p>}
         </div>
         <Box display="flex" flexDirection="column" justifyContent="flex-end" height="100%">
         {!isUser && !isLoading && (
           isSpeaking && speakingMessage === message
           ? <button onClick={stopSpeech}>⏸️</button>
-          : <button onClick={() => startSpeech(message)}>⏯️</button>            
+          : <button style={{marginLeft:"10px"}} onClick={() => startSpeech(message)}>⏯️</button>            
         )}
         </Box>
       </div>
@@ -97,6 +102,7 @@ ChatBubble.propTypes = {
   timestamp: PropTypes.string.isRequired,
   profileImg: PropTypes.string.isRequired,
   isLoading: PropTypes.bool,
+  isBlurVariant: PropTypes.bool,
 
 
 };
@@ -104,4 +110,5 @@ ChatBubble.propTypes = {
 ChatBubble.defaultProps = {
   isUser: false,
   isLoading: false,
+  isBlurVariant: false,
 };
