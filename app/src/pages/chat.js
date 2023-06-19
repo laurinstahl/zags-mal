@@ -67,8 +67,8 @@ function Chat(){
     }
     // Start the new speech
     speech.text = message;
-    speech.voice = voices[143];
-    speech.rate = 1.2;
+    speech.voice = voices[0];
+    speech.rate = 1;
     setTimeout(() => {
       window.speechSynthesis.speak(speech);
     }, 50); // delay of 50ms
