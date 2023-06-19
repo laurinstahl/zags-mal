@@ -10,13 +10,12 @@ function Chat(){
 
   //refresh button
   const [abortController, setAbortController] = React.useState(null);
-
+  let firstMessage = messages.length > 0 ? [messages[0]] : [];
   const handleRefresh = () => {
     if (abortController) {
       abortController.abort();
     }
     // check if there are messages and if so, keep the first message
-    let firstMessage = messages.length > 0 ? [messages[0]] : [];
     setMessages(firstMessage);
     
     // show the option buttons
@@ -136,10 +135,14 @@ function Chat(){
       console.error('Error:', error);
     });
   };
+  const scrollToBottom = () => {
+    if (messages.length !== 1) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
-  React.useEffect(() => {
-    messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  React.useEffect(scrollToBottom, [messages]);
+
 
   return (
     <div className="box">
