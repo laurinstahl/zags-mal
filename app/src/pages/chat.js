@@ -78,7 +78,7 @@ function Chat(){
     }
     // Start the new speech
     speech.text = message;
-    speech.voice = voices[6]; //5 not bad
+    speech.voice = voices[7]; //5 not bad
     speech.rate = 1;
     setTimeout(() => {
       window.speechSynthesis.speak(speech);
