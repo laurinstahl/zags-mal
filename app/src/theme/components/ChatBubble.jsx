@@ -77,7 +77,7 @@ export const ChatBubble = ({ profileImg, message, isUser, timestamp, hiddenMessa
         <Box display="flex" flexDirection="column" justifyContent="flex-end" height="100%">
         {!isUser && !isLoading && (
           isSpeaking && speakingMessage === message
-          ? <button onClick={stopSpeech}>⏸️</button>
+          ? <button style={{marginLeft:"10px"}} onClick={stopSpeech}>⏸️</button>
           : <button style={{marginLeft:"10px"}} onClick={() => startSpeech(message)}>⏯️</button>            
         )}
         </Box>

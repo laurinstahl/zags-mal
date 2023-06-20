@@ -14,7 +14,7 @@ function Chat(){
   const userAgent = navigator.userAgent.toLowerCase();
   const isIOS = /iphone|ipad|ipod/.test(userAgent);
   const isCommpatible = !(isIOS && !userAgent.includes('macintosh')); 
-  const isCompatibilityVariant = false; // Show compatibility message if not iOS or iPad on macOS
+  const isCompatibilityVariant = isCommpatible; // Show compatibility message if not iOS or iPad on macOS
   
   //refresh button
   const [abortController, setAbortController] = React.useState(null);
