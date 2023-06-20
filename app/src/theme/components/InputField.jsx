@@ -15,7 +15,6 @@ export const InputField = ({ onSend, isLoading, disabled, isVariant, ...props })
   const mediaRecorder = React.useRef(null);
   const [loadingText, setLoadingText] = React.useState('');
   const textareaRef = React.useRef(null);
-  console.log(processing,disabled,processing || disabled)
   React.useEffect(() => {
     if (processing) {
       let i = 0;
@@ -47,7 +46,6 @@ export const InputField = ({ onSend, isLoading, disabled, isVariant, ...props })
   };
 
   const handleDataAvailable = (e) => {
-    console.log('Data available...');
     if (e.data.size > 0) {
       setChunks((prev) => [...prev, e.data]);
     }
@@ -58,7 +56,6 @@ export const InputField = ({ onSend, isLoading, disabled, isVariant, ...props })
   };
 
   const handleStop = () => {
-    console.log('Recording stopped...');
     mediaRecorder.current.onstop = () => {
       const blob = new Blob(chunks, { 'type': 'audio/mp4; codecs=mp4a' });
       const url = window.URL.createObjectURL(blob);
@@ -67,18 +64,15 @@ export const InputField = ({ onSend, isLoading, disabled, isVariant, ...props })
       link.setAttribute('download', 'audio.mp4');
       document.body.appendChild(link);
       setProcessing(true); // Set processing to true here
-      console.log('Processing:', processing); // Add this line
       //link.click(); we don't want to download the file
       setChunks([]);
       const sendAudioToTranscribeAPI = async () => {
         const data = new FormData();
         data.append('file', blob, 'audio.mp4');
         for (let pair of data.entries()) {
-          console.log(pair[0] + ', ' + pair[1]);
         }
         try {
           const response = await axios.post('/api/transcribe', data);
-          console.log('Response from API:', response);
           setMessage(prevMessage => isVariant ? `${prevMessage} ${response.data.message.text}` : response.data.message.text);
         } catch (error) {
           console.error('Error sending audio file:', error);

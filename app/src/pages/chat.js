@@ -1,5 +1,5 @@
 import React from 'react';
-import {ChatBubble, InputField, OptionButton, RefreshButton}   from '../theme/index';
+import {ChatBubble, InputField, OptionButton, RefreshButton, CompatibilityMessage}   from '../theme/index';
 import { Box } from '@chakra-ui/react';
 
 function Chat(){
@@ -9,6 +9,13 @@ function Chat(){
   const [hiddenMessages, setHiddenMessages] = React.useState([]);
   const isVariant = true;
   const isBlurVariant = true;
+  
+  //compatibility
+  const userAgent = navigator.userAgent.toLowerCase();
+  const isIOS = /iphone|ipad|ipod/.test(userAgent);
+  const isCommpatible = !(isIOS && !userAgent.includes('macintosh')); 
+  const isCompatibilityVariant = false; // Show compatibility message if not iOS or iPad on macOS
+  
   //refresh button
   const [abortController, setAbortController] = React.useState(null);
   let firstMessage = messages.length > 0 ? [messages[0]] : [];
@@ -67,12 +74,15 @@ function Chat(){
     }
     // Start the new speech
     speech.text = message;
-    speech.voice = voices[143];
+    console.log(voices);
+    speech.voice = voices[173]; //173, 13,12
     speech.rate = 1;
-    setTimeout(() => {
-      window.speechSynthesis.speak(speech);
-    }, 50); // delay of 50ms
+    // setTimeout(() => {
+    //   console.log("we are speaking",message,window.speechSynthesis.speak)
+    //   console.log(speech)
+    // }, 150); // delay of 50ms
     setIsSpeaking(true);
+    window.speechSynthesis.speak(speech);
     setSpeakingMessage(message);
   };
 
@@ -143,7 +153,9 @@ function Chat(){
   };
 
   React.useEffect(scrollToBottom, [messages]);
-
+  if (isCompatibilityVariant) {
+    return <CompatibilityMessage/>;
+  }
 
   return (
     <div className="box">

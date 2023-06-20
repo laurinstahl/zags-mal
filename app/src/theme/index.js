@@ -9,6 +9,7 @@ export * from './components/BannerLink';
 export * from './components/RefreshButton';
 export * from './components/ChatBubble';
 export * from './components/InputField';
+export * from './components/CompatibilityMessage';
 export * from './components/OptionButton';
 
 //molecules
