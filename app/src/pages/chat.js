@@ -14,7 +14,7 @@ function Chat(){
   const userAgent = navigator.userAgent.toLowerCase();
   const isIOS = /iphone|ipad|ipod/.test(userAgent);
   const isCommpatible = !(isIOS && !userAgent.includes('macintosh')); 
-  const isCompatibilityVariant = isCommpatible; // Show compatibility message if not iOS or iPad on macOS
+  const isCompatibilityVariant = false //isCommpatible; // Show compatibility message if not iOS or iPad on macOS
   
   //refresh button
   const [abortController, setAbortController] = React.useState(null);
@@ -122,14 +122,23 @@ function Chat(){
     setShowOptionButtons(false);
 
     // Send user's message to server and get response from ChatGPT
-    fetch('/api/chat', {
+
+    let apiEndpoint;
+
+    if (window.location.hostname === "localhost" && window.location.port === "3000") {
+        apiEndpoint = "http://localhost:8123/api/chat";
+    } else {
+        apiEndpoint = "/api/chat";
+    }
+
+    // Send user's message to server and get response from ChatGPT
+    fetch(apiEndpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ message }),
       signal: newAbortController.signal, // Add this line
-
     })
     .then(response => response.json())
     .then(data => {

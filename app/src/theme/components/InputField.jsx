@@ -72,7 +72,14 @@ export const InputField = ({ onSend, isLoading, disabled, isVariant, ...props })
         for (let pair of data.entries()) {
         }
         try {
-          const response = await axios.post('/api/transcribe', data);
+          let apiEndpoint;
+
+          if (window.location.hostname === "localhost" && window.location.port === "3000") {
+              apiEndpoint = "http://localhost:8123/api/transcribe";
+          } else {
+              apiEndpoint = "/api/transcribe";
+          }
+          const response = await axios.post(apiEndpoint, data);
           setMessage(prevMessage => isVariant ? `${prevMessage} ${response.data.message.text}` : response.data.message.text);
         } catch (error) {
           console.error('Error sending audio file:', error);
