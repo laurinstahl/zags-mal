@@ -2,7 +2,7 @@ const express = require('express');
 const chatRouter = require('./routes/chat');
 const transcribeRouter = require('./routes/transcribe');
 const cors = require('cors');
-const path = require('path'); // You need to require 'path'
+const path = require('path'); 
 require('dotenv').config();
 
 const app = express();
