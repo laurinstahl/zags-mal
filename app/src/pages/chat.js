@@ -10,9 +10,19 @@ function Chat(){
   const isVariant = true;
   const isBlurVariant = true;
   
-  //compatibility
+  //compatibility & setting user voice
+  let voicesIndex; // Initialize voicesIndex
+  if (window.navigator.userAgent.indexOf("Chrome") !== -1) {
+    voicesIndex = 143; // Set to Chrome
+  } else if (window.navigator.userAgent.indexOf("Safari") !== -1) {
+    voicesIndex = 173; // Set to Safari
+  } else {
+    voicesIndex = 143; // Default to Chrome if neither Chrome nor Safari is detected
+  }
+  console.log(voicesIndex);
   const userAgent = navigator.userAgent.toLowerCase();
   const isIOS = /iphone|ipad|ipod/.test(userAgent);
+
   const isCommpatible = !(isIOS && !userAgent.includes('macintosh')); 
   const isCompatibilityVariant = false //isCommpatible; // Show compatibility message if not iOS or iPad on macOS
   
@@ -46,6 +56,7 @@ function Chat(){
   const [speech, setSpeech] = React.useState(new SpeechSynthesisUtterance());
   const [speakingMessage, setSpeakingMessage] = React.useState(null);
   const [voices, setVoices] = React.useState(null);
+  const [voicesLoaded, setVoicesLoaded] = React.useState(false); // Add this line
 
   //call speech at pageload
   React.useEffect(() => {
@@ -59,11 +70,22 @@ function Chat(){
       id = setInterval(() => {
         if (synth.getVoices().length !== 0) {
           setVoices(synth.getVoices());
+          setVoicesLoaded(true); // Set voicesLoaded to true
           clearInterval(id);
         }
       }, 10);
     }
   }, []);
+
+  // Add this useEffect
+  React.useEffect(() => {
+    if (voicesLoaded) {
+      startSpeech(messages[0].message);
+      // Stop speech synthesis immediately
+      setTimeout(stopSpeech, 500); // stop after 100 milliseconds
+      setTimeout(setIsSpeaking(false), 500); // stop after 100 milliseconds
+    }
+  }, [voicesLoaded]);
 
   // Define a function to start speech
   const startSpeech = (message) => {
@@ -75,7 +97,7 @@ function Chat(){
     // Start the new speech
     speech.text = message;
     console.log(voices);
-    speech.voice = voices[173]; //173, 13,12
+    speech.voice = voices[voicesIndex];
     speech.rate = 1;
     // setTimeout(() => {
     //   console.log("we are speaking",message,window.speechSynthesis.speak)
