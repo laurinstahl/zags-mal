@@ -88,7 +88,7 @@ function Chat(){
     }
     // Start the new speech
     speech.text = message;
-    console.log(voices) //for debugging
+    voices.forEach(voice => console.log(JSON.stringify(voice))); //for debugging
     speech.voice = voices[voicesIndex];
     speech.rate = 1;
     setIsSpeaking(true);
