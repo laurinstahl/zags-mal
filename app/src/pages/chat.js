@@ -88,7 +88,14 @@ function Chat(){
     }
     // Start the new speech
     speech.text = message;
-    console.log(JSON.stringify(voices)); //for debugging
+    voices.forEach(voice => {
+      for (let propertyName in voice) {
+        console.log(`${propertyName}: ${voice[propertyName]}`);
+      }
+      voices.forEach(voice => {
+        console.log(`Name: ${voice.name}, Lang: ${voice.lang}, LocalService: ${voice.localService}, Default: ${voice.default}`);
+      });
+    }); //for debugging
     speech.voice = voices[voicesIndex];
     speech.rate = 1;
     setIsSpeaking(true);
