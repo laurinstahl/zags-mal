@@ -10,16 +10,17 @@ function Chat(){
   const isVariant = true;
   const isBlurVariant = true;
   
+  
+
   //compatibility & setting user voice
   let voicesIndex; // Initialize voicesIndex
-  if (window.navigator.userAgent.indexOf("Chrome") !== -1) {
+  if (window.navigator.userAgent.indexOf("CriOS") !== -1) {
     voicesIndex = 143; // Set to Chrome
-  } else if (window.navigator.userAgent.indexOf("Safari") !== -1) {
+  } else if (window.navigator.userAgent.indexOf("Safari") !== -1 && window.navigator.userAgent.indexOf("Chrome") === -1) {
     voicesIndex = 173; // Set to Safari
   } else {
     voicesIndex = 143; // Default to Chrome if neither Chrome nor Safari is detected
   }
-  console.log(voicesIndex);
   const userAgent = navigator.userAgent.toLowerCase();
   const isIOS = /iphone|ipad|ipod/.test(userAgent);
 
@@ -77,16 +78,6 @@ function Chat(){
     }
   }, []);
 
-  // Add this useEffect
-  React.useEffect(() => {
-    if (voicesLoaded) {
-      startSpeech(messages[0].message);
-      // Stop speech synthesis immediately
-      setTimeout(stopSpeech, 500); // stop after 100 milliseconds
-      setTimeout(setIsSpeaking(false), 500); // stop after 100 milliseconds
-    }
-  }, [voicesLoaded]);
-
   // Define a function to start speech
   const startSpeech = (message) => {
     if (isSpeaking) {
@@ -96,13 +87,8 @@ function Chat(){
     }
     // Start the new speech
     speech.text = message;
-    console.log(voices);
     speech.voice = voices[voicesIndex];
     speech.rate = 1;
-    // setTimeout(() => {
-    //   console.log("we are speaking",message,window.speechSynthesis.speak)
-    //   console.log(speech)
-    // }, 150); // delay of 50ms
     setIsSpeaking(true);
     window.speechSynthesis.speak(speech);
     setSpeakingMessage(message);
@@ -121,6 +107,16 @@ function Chat(){
   speech.onend = function(event) {
     setIsSpeaking(false);
   };
+
+  //Splash screen
+  const [splashScreenVisible, setSplashScreenVisible] = React.useState(true);
+
+  const handleStart = React.useCallback(() => {
+    setSplashScreenVisible(false);
+    if (voicesLoaded) {
+      startSpeech(messages[0].message);
+    }
+  }, [voicesLoaded, messages]);
 
   const messagesEndRef = React.useRef(null);
   //communication to chatgpt
@@ -189,6 +185,13 @@ function Chat(){
   }
 
   return (
+    <>    
+      {splashScreenVisible ? (
+        <div className="splash-screen">
+          <h1>Zag's mal</h1>
+          <button onClick={handleStart}>Los geht's</button>
+        </div>
+      ) : null}
     <div className="box">
       <Box className="refresh-box" display="flex" flexDirection="row" justifyContent="center">
         <RefreshButton onRefresh={handleRefresh} />
@@ -236,6 +239,7 @@ function Chat(){
       </div>
       <InputField onSend={handleSend} disabled={isLoading} isVariant={isVariant} />
     </div>
+    </>
   );
 };
 
