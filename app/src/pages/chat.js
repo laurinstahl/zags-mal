@@ -1,5 +1,5 @@
 import React from 'react';
-import {ChatBubble, InputField, OptionButton, RefreshButton}   from '../theme/index';
+import {ChatBubble, InputField, OptionButton, RefreshButton, CompatibilityMessage}   from '../theme/index';
 import { Box } from '@chakra-ui/react';
 
 function Chat(){
@@ -7,16 +7,33 @@ function Chat(){
     { sender: 'ChatGPT', message: 'Hi, worüber willst du heute sprechen?', timestamp: new Date().toISOString(), profileImg:"https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ChatGPT_logo.svg/1200px-ChatGPT_logo.svg.png" }
   ]);
   const [hiddenMessages, setHiddenMessages] = React.useState([]);
+  const isVariant = true;
+  const isBlurVariant = true;
+  
+  //compatibility & setting user voice
+  let voicesIndex; // Initialize voicesIndex
+  if (window.navigator.userAgent.indexOf("Chrome") !== -1) {
+    voicesIndex = 143; // Set to Chrome
+  } else if (window.navigator.userAgent.indexOf("Safari") !== -1) {
+    voicesIndex = 173; // Set to Safari
+  } else {
+    voicesIndex = 143; // Default to Chrome if neither Chrome nor Safari is detected
+  }
+  console.log(voicesIndex);
+  const userAgent = navigator.userAgent.toLowerCase();
+  const isIOS = /iphone|ipad|ipod/.test(userAgent);
 
+  const isCommpatible = !(isIOS && !userAgent.includes('macintosh')); 
+  const isCompatibilityVariant = false //isCommpatible; // Show compatibility message if not iOS or iPad on macOS
+  
   //refresh button
   const [abortController, setAbortController] = React.useState(null);
-
+  let firstMessage = messages.length > 0 ? [messages[0]] : [];
   const handleRefresh = () => {
     if (abortController) {
       abortController.abort();
     }
     // check if there are messages and if so, keep the first message
-    let firstMessage = messages.length > 0 ? [messages[0]] : [];
     setMessages(firstMessage);
     
     // show the option buttons
@@ -39,6 +56,7 @@ function Chat(){
   const [speech, setSpeech] = React.useState(new SpeechSynthesisUtterance());
   const [speakingMessage, setSpeakingMessage] = React.useState(null);
   const [voices, setVoices] = React.useState(null);
+  const [voicesLoaded, setVoicesLoaded] = React.useState(false); // Add this line
 
   //call speech at pageload
   React.useEffect(() => {
@@ -52,11 +70,22 @@ function Chat(){
       id = setInterval(() => {
         if (synth.getVoices().length !== 0) {
           setVoices(synth.getVoices());
+          setVoicesLoaded(true); // Set voicesLoaded to true
           clearInterval(id);
         }
       }, 10);
     }
   }, []);
+
+  // Add this useEffect
+  React.useEffect(() => {
+    if (voicesLoaded) {
+      startSpeech(messages[0].message);
+      // Stop speech synthesis immediately
+      setTimeout(stopSpeech, 500); // stop after 100 milliseconds
+      setTimeout(setIsSpeaking(false), 500); // stop after 100 milliseconds
+    }
+  }, [voicesLoaded]);
 
   // Define a function to start speech
   const startSpeech = (message) => {
@@ -67,12 +96,15 @@ function Chat(){
     }
     // Start the new speech
     speech.text = message;
-    speech.voice = voices[143];
-    speech.rate = 1.2;
-    setTimeout(() => {
-      window.speechSynthesis.speak(speech);
-    }, 50); // delay of 50ms
+    console.log(voices);
+    speech.voice = voices[voicesIndex];
+    speech.rate = 1;
+    // setTimeout(() => {
+    //   console.log("we are speaking",message,window.speechSynthesis.speak)
+    //   console.log(speech)
+    // }, 150); // delay of 50ms
     setIsSpeaking(true);
+    window.speechSynthesis.speak(speech);
     setSpeakingMessage(message);
   };
 
@@ -112,14 +144,23 @@ function Chat(){
     setShowOptionButtons(false);
 
     // Send user's message to server and get response from ChatGPT
-    fetch('http://localhost:8123/api/chat', {
+
+    let apiEndpoint;
+
+    if (window.location.hostname === "localhost" && window.location.port === "3000") {
+        apiEndpoint = "http://localhost:8123/api/chat";
+    } else {
+        apiEndpoint = "/api/chat";
+    }
+
+    // Send user's message to server and get response from ChatGPT
+    fetch(apiEndpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ message }),
       signal: newAbortController.signal, // Add this line
-
     })
     .then(response => response.json())
     .then(data => {
@@ -136,10 +177,16 @@ function Chat(){
       console.error('Error:', error);
     });
   };
+  const scrollToBottom = () => {
+    if (messages.length !== 1) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
-  React.useEffect(() => {
-    messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  React.useEffect(scrollToBottom, [messages]);
+  if (isCompatibilityVariant) {
+    return <CompatibilityMessage/>;
+  }
 
   return (
     <div className="box">
@@ -161,6 +208,7 @@ function Chat(){
             startSpeech={startSpeech}
             stopSpeech={stopSpeech}
             speakingMessage={speakingMessage}
+            isVariant={true}
           />}
           <div className="option-buttons">
             <OptionButton text="Rollenspiel" prompt="Starte ein Rollenspiel. Such dir eine Situation aus, nehme eine Rolle ein und stelle die erste Frage." onOptionSelected={handleOptionSelected} showOptionButtons={showOptionButtons} setShowOptionButtons={setShowOptionButtons} />
@@ -186,7 +234,7 @@ function Chat(){
         
         <div ref={messagesEndRef} />
       </div>
-      <InputField onSend={handleSend} disabled={isLoading} />
+      <InputField onSend={handleSend} disabled={isLoading} isVariant={isVariant} />
     </div>
   );
 };

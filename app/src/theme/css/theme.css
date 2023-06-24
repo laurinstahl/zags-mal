@@ -163,6 +163,11 @@ button + button {
   background-color: var(--main-bg-color)/* your theme's main color */;
   color: var(--main-text-color)/* a suitable color for the text */;
   /* align-self: flex-start; */
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
 
 }
 
@@ -185,27 +190,62 @@ button + button {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-radius: 8px;
-  background-color: var(--main-bg-color);
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 0px 10px -5px;
+  background-color: var(--secondary-bg-color);
   padding: 8px;
+  padding-bottom:20px;
   flex-shrink: 0; /* prevent this from shrinking */
+  position: fixed; /* Add this line */
+  bottom: 0; /* And this line */
+  left: 0; /* And this line */
+  width: 100%; /* And this line */
+  flex-direction: column; /* Add this line */
 }
 
 .input-text {
   flex-grow: 1;
   margin-right: 10px;
   overflow: auto;
-  max-height: 120px;
+  max-height: 95px;
 }
 
-.send-button,
-.record-button {
-  margin-left: 10px;
+.input-field.variant .input-text {
+  width: 100%;
+  margin: 10px 20px;
+  padding: 0px 10px;
+  margin-bottom:10px;
+  background-color: none;
+  min-height:95px;
+  background-color: var(--secondary-bg-color);
+}
+
+.input-field:not(.variant) {
+  flex-direction: row; /* Add this line */
+}
+
+.input-field.variant .record-button {
+  font-size: 30pt;
+  background-color: var(--main-bg-color);
+  border-radius: 100%;
+  width: 60px;
+}
+
+.input-field.variant .send-button {
+  margin-left:20px;
+}
+
+.input-field.variant .cancel-button {
+  order: 2;
+  margin-top: 10px;
+  margin-right: 20px;
 }
 
 .messages{
   overflow-y: auto; /* enable scrolling */
   flex-grow: 1; /* take all available space */
+  padding-bottom: 190px;
 }
 
 .option-buttons {
