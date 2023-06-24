@@ -144,7 +144,6 @@ function Chat(){
     setShowOptionButtons(false);
 
     // Send user's message to server and get response from ChatGPT
-
     let apiEndpoint;
 
     if (window.location.hostname === "localhost" && window.location.port === "3000") {
