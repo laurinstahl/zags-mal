@@ -21,6 +21,7 @@ function Chat(){
   } else {
     voicesIndex = 143; // Default to Chrome if neither Chrome nor Safari is detected
   }
+  console.log(window.navigator.userAgent, voicesIndex) //for debugging
   const userAgent = navigator.userAgent.toLowerCase();
   const isIOS = /iphone|ipad|ipod/.test(userAgent);
 
@@ -87,6 +88,7 @@ function Chat(){
     }
     // Start the new speech
     speech.text = message;
+    console.log(voices) //for debugging
     speech.voice = voices[voicesIndex];
     speech.rate = 1;
     setIsSpeaking(true);
