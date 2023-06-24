@@ -19,6 +19,7 @@ function Chat(){
   } else {
     voicesIndex = 143; // Default to Chrome if neither Chrome nor Safari is detected
   }
+  voicesIndex = 143;
   console.log(voicesIndex);
   const userAgent = navigator.userAgent.toLowerCase();
   const isIOS = /iphone|ipad|ipod/.test(userAgent);
