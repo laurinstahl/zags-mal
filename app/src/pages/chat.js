@@ -15,7 +15,7 @@ function Chat(){
   //compatibility & setting user voice
   let voicesIndex; // Initialize voicesIndex
   if (window.navigator.userAgent.indexOf("CriOS") !== -1) {
-    voicesIndex = 143; // Set to Chrome
+    voicesIndex = 143; // Set to Chrome, 5,6,7,
   } else if (window.navigator.userAgent.indexOf("Safari") !== -1 && window.navigator.userAgent.indexOf("Chrome") === -1) {
     voicesIndex = 173; // Set to Safari
   } else {
@@ -89,12 +89,12 @@ function Chat(){
     // Start the new speech
     speech.text = message;
     voices.forEach(voice => {
-      for (let propertyName in voice) {
-        console.log(`${propertyName}: ${voice[propertyName]}`);
-      }
-      voices.forEach(voice => {
+      
+      voices.forEach((voice, index) => {
+        console.log(`Voice ${index + 1}`);
         console.log(`Name: ${voice.name}, Lang: ${voice.lang}, LocalService: ${voice.localService}, Default: ${voice.default}`);
       });
+      
     }); //for debugging
     speech.voice = voices[voicesIndex];
     speech.rate = 1;
