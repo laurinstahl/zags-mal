@@ -15,11 +15,11 @@ function Chat(){
   //compatibility & setting user voice
   let voicesIndex; // Initialize voicesIndex
   if (window.navigator.userAgent.indexOf("CriOS") !== -1) {
-    voicesIndex = 143; // Set to Chrome, 5,6,7,
+    voicesIndex = 182; // Set to Chrome, 5,6,7, 182, 14,13,12,11,10,9,8
   } else if (window.navigator.userAgent.indexOf("Safari") !== -1 && window.navigator.userAgent.indexOf("Chrome") === -1) {
     voicesIndex = 173; // Set to Safari
   } else {
-    voicesIndex = 143; // Default to Chrome if neither Chrome nor Safari is detected
+    voicesIndex = 182; // Default to Chrome if neither Chrome nor Safari is detected
   }
   console.log(window.navigator.userAgent, voicesIndex) //for debugging
   const userAgent = navigator.userAgent.toLowerCase();
