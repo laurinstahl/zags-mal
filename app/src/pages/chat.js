@@ -26,7 +26,7 @@ function Chat(){
   const isIOS = /iphone|ipad|ipod/.test(userAgent);
 
   const isCommpatible = !(isIOS && !userAgent.includes('macintosh')); 
-  const isCompatibilityVariant = isCommpatible //isCommpatible; // Show compatibility message if not iOS or iPad on macOS
+  const isCompatibilityVariant = isCommpatible; // Show compatibility message if not iOS or iPad on macOS
   
   //refresh button
   const [abortController, setAbortController] = React.useState(null);
@@ -88,20 +88,37 @@ function Chat(){
     }
     // Start the new speech
     speech.text = message;
-    voices.forEach(voice => {
-      
-      voices.forEach((voice, index) => {
-        console.log(`Voice ${index + 1}`);
-        console.log(`Name: ${voice.name}, Lang: ${voice.lang}, LocalService: ${voice.localService}, Default: ${voice.default}`);
-      });
-      
-    }); //for debugging
-    speech.voice = voices[voicesIndex];
+  
+    // Filter the voices for only German voices
+    let germanVoices = voices.filter(voice => voice.lang.includes('de-DE'));
+
+    // Check if 'Google' exists in German voices
+    let googleVoice = germanVoices.filter(voice => voice.name.includes('Google'));
+
+    let selectedVoice;
+
+    if(googleVoice.length > 0) {
+      // If 'Google' exists, use it as the speech voice
+      selectedVoice = googleVoice[0];
+    } else {
+      // If 'Google' doesn't exist, check for 'Anna'
+      let annaVoice = germanVoices.filter(voice => voice.name.includes('Anna'));
+      if(annaVoice.length > 0) {
+        // If 'Anna' exists, use it as the speech voice
+        selectedVoice = annaVoice[0];
+      } else {
+        // If 'Anna' doesn't exist, use the last voice in the array of German voices
+        selectedVoice = germanVoices[germanVoices.length - 1];
+      }
+    }
+
+    speech.voice = selectedVoice;
     speech.rate = 1;
     setIsSpeaking(true);
     window.speechSynthesis.speak(speech);
     setSpeakingMessage(message);
   };
+  console.log(speech.voice)
 
   // Define a function to stop speech
   const stopSpeech = () => {
