@@ -27,7 +27,7 @@ app.get('*', (req, res) => {
 });
 
 
-const PORT = process.env.PORT || 8123; // use the port defined in environment variable or 5000
+const PORT = process.env.ENV === 'STAGING' ? 8124 : 8123;
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
