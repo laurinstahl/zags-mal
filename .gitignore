@@ -128,3 +128,6 @@ dist
 .pnp.*
 .DS_Store
 app/.DS_Store
+
+#ignore future changes to index.html
+app/public/index.html
