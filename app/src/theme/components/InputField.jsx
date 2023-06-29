@@ -143,5 +143,5 @@ InputField.propTypes = {
   /**
    * Function to call when the microphone button is clicked
    */
-  onRecord: PropTypes.func.isRequired,
+  onRecord: PropTypes.func,
 };

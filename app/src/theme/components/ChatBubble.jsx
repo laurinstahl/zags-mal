@@ -2,16 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import '../css/theme.css';
 import { Box } from '@chakra-ui/react';
+import { useFeatureIsOn } from "@growthbook/growthbook-react";
 
 /**
  * Primary UI component for user interaction
  */
-export const ChatBubble = ({ profileImg, message, isUser, timestamp, hiddenMessages, setHiddenMessages, isSpeaking, startSpeech, stopSpeech, speakingMessage, isLoading, ...props }) => {
+export const ChatBubble = ({ profileImg, message, isUser, timestamp, hiddenMessages, setHiddenMessages, isSpeaking, startSpeech, stopSpeech, speakingMessage, isLoading, isBlurVariant, ...props }) => {
   const color = isUser ? 'chatbubble-secondary' : 'chatbubble-primary';
-  const isBlurVariant = true;
   //handle loading dots
   const [loadingDots, setLoadingDots] = React.useState('...');
-
   React.useEffect(() => {
     if (isLoading) {
       const interval = setInterval(() => {
