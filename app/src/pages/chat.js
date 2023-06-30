@@ -1,32 +1,36 @@
 import React from 'react';
 import {ChatBubble, InputField, OptionButton, RefreshButton, CompatibilityMessage}   from '../theme/index';
 import { Box } from '@chakra-ui/react';
+import { useFeatureIsOn } from "@growthbook/growthbook-react";
 
 function Chat(){
   const [messages, setMessages] = React.useState([
     { sender: 'ChatGPT', message: 'Hi, worüber willst du heute sprechen?', timestamp: new Date().toISOString(), profileImg:"https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ChatGPT_logo.svg/1200px-ChatGPT_logo.svg.png" }
   ]);
+  const [userMessageCount, setUserMessageCount] = React.useState(1);
   const [hiddenMessages, setHiddenMessages] = React.useState([]);
-  const isVariant = true;
-  const isBlurVariant = true;
-  
-  
+  const isInputVariant = useFeatureIsOn("is_input_variant");
+  const isCompatibilityVariant = useFeatureIsOn("is_compatibility_variant");
+  const isBlurVariant = useFeatureIsOn("is_blur_variant");
+  const variants = [{"isBlurVariant":isBlurVariant},{"isInputVariant":isInputVariant},{"isCompatibilityVariant":isCompatibilityVariant}];
 
   //compatibility & setting user voice
   let voicesIndex; // Initialize voicesIndex
   if (window.navigator.userAgent.indexOf("CriOS") !== -1) {
-    voicesIndex = 143; // Set to Chrome
+    voicesIndex = 9; // Set to Chrome, 4 ✅,5,6, 181 ✅, 13 ✅,12,11,10,9,8,7
   } else if (window.navigator.userAgent.indexOf("Safari") !== -1 && window.navigator.userAgent.indexOf("Chrome") === -1) {
     voicesIndex = 173; // Set to Safari
   } else {
-    voicesIndex = 143; // Default to Chrome if neither Chrome nor Safari is detected
+    voicesIndex = 9; // Default to Chrome if neither Chrome nor Safari is detected
   }
+  // console.log(window.navigator.userAgent, voicesIndex) //for debugging
   const userAgent = navigator.userAgent.toLowerCase();
   const isIOS = /iphone|ipad|ipod/.test(userAgent);
 
+  //feature flags
+
   const isCommpatible = !(isIOS && !userAgent.includes('macintosh')); 
-  const isCompatibilityVariant = isCommpatible //isCommpatible; // Show compatibility message if not iOS or iPad on macOS
-  
+  const showCompatibilityMessage = isCommpatible && isCompatibilityVariant; // Show compatibility message if not iOS or iPad on macOS
   //refresh button
   const [abortController, setAbortController] = React.useState(null);
   let firstMessage = messages.length > 0 ? [messages[0]] : [];
@@ -87,12 +91,37 @@ function Chat(){
     }
     // Start the new speech
     speech.text = message;
-    speech.voice = voices[voicesIndex];
+  
+    // Filter the voices for only German voices
+    let germanVoices = voices.filter(voice => voice.lang.includes('de-DE'));
+
+    // Check if 'Google' exists in German voices
+    let googleVoice = germanVoices.filter(voice => voice.name.includes('Google'));
+
+    let selectedVoice;
+
+    if(googleVoice.length > 0) {
+      // If 'Google' exists, use it as the speech voice
+      selectedVoice = googleVoice[0];
+    } else {
+      // If 'Google' doesn't exist, check for 'Anna'
+      let annaVoice = germanVoices.filter(voice => voice.name.includes('Anna'));
+      if(annaVoice.length > 0) {
+        // If 'Anna' exists, use it as the speech voice
+        selectedVoice = annaVoice[0];
+      } else {
+        // If 'Anna' doesn't exist, use the last voice in the array of German voices
+        selectedVoice = germanVoices[germanVoices.length - 1];
+      }
+    }
+
+    speech.voice = selectedVoice;
     speech.rate = 1;
     setIsSpeaking(true);
     window.speechSynthesis.speak(speech);
     setSpeakingMessage(message);
   };
+  // console.log(speech.voice)
 
   // Define a function to stop speech
   const stopSpeech = () => {
@@ -140,7 +169,8 @@ function Chat(){
     setShowOptionButtons(false);
 
     // Send user's message to server and get response from ChatGPT
-
+    // user message count
+    setUserMessageCount(userMessageCount + 1);
     let apiEndpoint;
 
     if (window.location.hostname === "localhost" && window.location.port === "3000") {
@@ -155,7 +185,12 @@ function Chat(){
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ message }),
+      body: JSON.stringify({ 
+        message, 
+        userMessageCount,
+        userId: localStorage.getItem('userId'),
+        variants: variants
+      }), // Pass userMessageCount along with the message
       signal: newAbortController.signal, // Add this line
     })
     .then(response => response.json())
@@ -168,6 +203,8 @@ function Chat(){
       });
       setHiddenMessages(prevHiddenMessages => [...prevHiddenMessages, data.message]);  // Add the new message to hiddenMessages
       startSpeech(data.message);  // Start speech synthesis
+
+      
     })
     .catch((error) => {
       console.error('Error:', error);
@@ -180,7 +217,7 @@ function Chat(){
   };
 
   React.useEffect(scrollToBottom, [messages]);
-  if (isCompatibilityVariant) {
+  if (showCompatibilityMessage) {
     return <CompatibilityMessage/>;
   }
 
@@ -189,7 +226,12 @@ function Chat(){
       {splashScreenVisible ? (
         <div className="splash-screen">
           <h1>Zag's mal</h1>
-          <button onClick={handleStart}>Los geht's</button>
+          <button onClick={() => {
+            handleStart();
+            window.analytics.track('Los Gehts Clicked', {
+              variants: variants,
+            });
+            }}>Los geht's</button>        
         </div>
       ) : null}
     <div className="box">
@@ -211,7 +253,6 @@ function Chat(){
             startSpeech={startSpeech}
             stopSpeech={stopSpeech}
             speakingMessage={speakingMessage}
-            isVariant={true}
           />}
           <div className="option-buttons">
             <OptionButton text="Rollenspiel" prompt="Starte ein Rollenspiel. Such dir eine Situation aus, nehme eine Rolle ein und stelle die erste Frage." onOptionSelected={handleOptionSelected} showOptionButtons={showOptionButtons} setShowOptionButtons={setShowOptionButtons} />
@@ -231,13 +272,14 @@ function Chat(){
               startSpeech={startSpeech}
               stopSpeech={stopSpeech}
               speakingMessage={speakingMessage}
+              isBlurVariant={isBlurVariant}
               isLoading={index+1 === messages.length - 1 && isLoading} // Only pass isLoading if this is the last message
               />
           )}
         
         <div ref={messagesEndRef} />
       </div>
-      <InputField onSend={handleSend} disabled={isLoading} isVariant={isVariant} />
+      <InputField onSend={handleSend} disabled={isLoading} isVariant={isInputVariant} />
     </div>
     </>
   );
