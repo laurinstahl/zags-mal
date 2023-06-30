@@ -8,11 +8,11 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import {Chat} from './pages/index.js';
 import { GrowthBook, FeaturesReady, GrowthBookProvider } from "@growthbook/growthbook-react";
 
-const growthbookKey = process.env.REACT_APP_GROWTHBOOK_DEV
-if (process.env.ENV == 'PROD') {
-  const growthbookKey = process.env.REACT_APP_GROWTHBOOK_PROD
+let growthbookKey = process.env.REACT_APP_GROWTHBOOK_DEV
+if (process.env.REACT_APP_ENV === 'PROD') {
+  growthbookKey = process.env.REACT_APP_GROWTHBOOK_PROD
 }
-
+console.log(growthbookKey)
 // Create a GrowthBook instance
 const gb = new GrowthBook({
   apiHost: "https://cdn.growthbook.io",
