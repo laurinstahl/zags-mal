@@ -13,7 +13,7 @@ if (process.env.REACT_APP_ENV === 'PROD') {
   growthbookKey = process.env.REACT_APP_GROWTHBOOK_PROD
 }
 console.log(growthbookKey)
-// Create a GrowthBook instance
+// Create a GrowthBook instanc
 const gb = new GrowthBook({
   apiHost: "https://cdn.growthbook.io",
   clientKey: growthbookKey,
