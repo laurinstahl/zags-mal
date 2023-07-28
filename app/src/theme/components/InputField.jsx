@@ -115,7 +115,11 @@ export const InputField = ({ onSend, isLoading, disabled, isVariant, ...props })
 
   return (
     <Box p="16px">
+      
       <div className={`input-field ${isVariant ? "variant" : ""}`}>
+        <div className="input-field-title">
+          Speak & Send
+        </div>
         <textarea
           value={processing ? (isVariant ? message + loadingText : loadingText) : message}
           ref={textareaRef}
@@ -126,9 +130,18 @@ export const InputField = ({ onSend, isLoading, disabled, isVariant, ...props })
           {...props}
         />
         <div className={`button-box ${isVariant ? "variant" : ""}`}>
-          {isVariant && <button onClick={handleCancel} className="cancel-button">Cancel</button>}
-        <button onClick={handleRecord} className="record-button">{recording ? '⏹️' : '🎙️'}</button>
-        <button onClick={handleSend} className="send-button" disabled={message.trim() === ''}>Send</button>
+          {isVariant && 
+            <button onClick={handleCancel} className="cancel-button">
+              <img src="/img/cancel.svg" alt="Cancel" />
+            </button>
+          }
+          <button onClick={handleRecord} className="record-button">
+            {recording ? '⏹️' : <img src="/img/microphone.svg" alt="Microphone" />}
+          </button>
+        
+        <button onClick={handleSend} className="send-button" disabled={message.trim() === ''}>
+          <img src="/img/send.svg" alt="Send" />
+        </button>
         </div>
       </div>
     </Box>

@@ -5,7 +5,7 @@ import { ChakraProvider, Box, Spinner } from '@chakra-ui/react';
 import { theme, Button, IconButton, Alert }   from './theme/index';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 // import { ItemList, ItemDetails } from './pages/index';
-import {Chat} from './pages/index.js';
+import {Chat, Splash} from './pages/index.js';
 import { GrowthBook, FeaturesReady, GrowthBookProvider } from "@growthbook/growthbook-react";
 
 let growthbookKey = process.env.REACT_APP_GROWTHBOOK_DEV
@@ -63,7 +63,8 @@ function App() {
         >
         <Router>
         <Routes>
-          <Route exact path="/" element={<Chat/>} />
+          <Route exact path="/chat" element={<Chat/>} />
+          <Route exact path="/" element={<Splash/>} />
         </Routes>
       </Router>
       </FeaturesReady>
