@@ -2,16 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import '../css/theme.css';
 import { Box } from '@chakra-ui/react';
+import { useFeatureIsOn } from "@growthbook/growthbook-react";
 
 /**
  * Primary UI component for user interaction
  */
-export const ChatBubble = ({ profileImg, message, isUser, timestamp, hiddenMessages, setHiddenMessages, isSpeaking, startSpeech, stopSpeech, speakingMessage, isLoading, ...props }) => {
+export const ChatBubble = ({ profileImg, message, isUser, timestamp, hiddenMessages, setHiddenMessages, isSpeaking, startSpeech, stopSpeech, speakingMessage, isLoading, isBlurVariant, ...props }) => {
   const color = isUser ? 'chatbubble-secondary' : 'chatbubble-primary';
-  const isBlurVariant = true;
   //handle loading dots
   const [loadingDots, setLoadingDots] = React.useState('...');
-
   React.useEffect(() => {
     if (isLoading) {
       const interval = setInterval(() => {
@@ -66,7 +65,7 @@ export const ChatBubble = ({ profileImg, message, isUser, timestamp, hiddenMessa
   return (
     <Box display="flex" flexDirection="row">
       <Box marginRight="8px" marginLeft="16px" display="flex" flexDirection="row" alignItems="flex-start" marginTop="10px" >
-        <img style={{borderRadius: '50%'}} width="50px" height="50px" src={profileImg} alt="profile" className="chatbubble-image" />
+        <img style={{borderRadius: '50%'}} width="30px" height="30px" src={profileImg} alt="profile" className="chatbubble-image" />
       </Box>
       <div className={['chatbubble', color].join(' ')} {...props}>
         

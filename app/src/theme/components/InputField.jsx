@@ -115,7 +115,11 @@ export const InputField = ({ onSend, isLoading, disabled, isVariant, ...props })
 
   return (
     <Box p="16px">
+      
       <div className={`input-field ${isVariant ? "variant" : ""}`}>
+        <div className="input-field-title">
+          Speak & Send
+        </div>
         <textarea
           value={processing ? (isVariant ? message + loadingText : loadingText) : message}
           ref={textareaRef}
@@ -126,9 +130,23 @@ export const InputField = ({ onSend, isLoading, disabled, isVariant, ...props })
           {...props}
         />
         <div className={`button-box ${isVariant ? "variant" : ""}`}>
-          {isVariant && <button onClick={handleCancel} className="cancel-button">Cancel</button>}
-        <button onClick={handleRecord} className="record-button">{recording ? '⏹️' : '🎙️'}</button>
-        <button onClick={handleSend} className="send-button" disabled={message.trim() === ''}>Send</button>
+          {isVariant && message.trim() !== '' && // Check if there is content in the message
+            <button onClick={handleCancel} className="cancel-button">
+              <img src="/img/cancel.svg" alt="Cancel" />
+            </button>
+          }
+         <div className={`record-button-container ${recording ? "record-button-pulsating" : ""}`}>
+          <div className="record-button-ring"></div>
+          <button onClick={handleRecord} className="record-button">
+            <img src="/img/microphone.svg" alt="Microphone" />
+          </button>
+        </div>
+
+          {message.trim() !== '' && // Check if there is content in the message
+            <button onClick={handleSend} className="send-button" disabled={message.trim() === ''}>
+              <img src="/img/send.svg" alt="Send" />
+            </button>
+          }
         </div>
       </div>
     </Box>
@@ -143,5 +161,5 @@ InputField.propTypes = {
   /**
    * Function to call when the microphone button is clicked
    */
-  onRecord: PropTypes.func.isRequired,
+  onRecord: PropTypes.func,
 };
