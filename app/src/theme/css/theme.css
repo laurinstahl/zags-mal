@@ -140,7 +140,7 @@ h1 {
 .chatbubble {
   /* shared styles for all chat bubbles here */
   border-radius: 5px 12px 12px 12px;
-  margin: 10px;
+  margin: 10px 10px 10px 2px;
   padding: 10px 16px;
   max-width: 70%;
   min-height: 24px;
@@ -152,7 +152,6 @@ h1 {
 .chatbubble .chatbubble-image {
   height: 1em; /* adjust as needed */
   width: auto; /* maintain aspect ratio */
-  margin-right: 10px; /* space between image and text */
 }
 
 .chatbubble-secondary {
