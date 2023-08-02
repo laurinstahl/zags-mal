@@ -9,8 +9,7 @@ function Chat(){
   ]);
   const [userMessageCount, setUserMessageCount] = React.useState(1);
   const [hiddenMessages, setHiddenMessages] = React.useState([]);
-  //const isInputVariant = useFeatureIsOn("is_input_variant");
-  const isInputVariant = true;
+  const isInputVariant = useFeatureIsOn("is_input_variant");
   const isCompatibilityVariant = useFeatureIsOn("is_compatibility_variant");
   const isBlurVariant = useFeatureIsOn("is_blur_variant");
   const variants = [{"isBlurVariant":isBlurVariant},{"isInputVariant":isInputVariant},{"isCompatibilityVariant":isCompatibilityVariant}];
