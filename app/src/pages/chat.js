@@ -161,6 +161,7 @@ function Chat(){
     // Send user's message to server and get response from ChatGPT
     // user message count
     setUserMessageCount(userMessageCount + 1);
+
     let apiEndpoint;
 
     if (window.location.hostname === "localhost" && window.location.port === "3000") {
