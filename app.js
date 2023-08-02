@@ -3,6 +3,7 @@ const chatRouter = require('./routes/chat');
 const transcribeRouter = require('./routes/transcribe');
 const cors = require('cors');
 const path = require('path'); 
+
 require('dotenv').config();
 const Analytics = require('analytics-node');
 const analytics = new Analytics(process.env.SEGMENT_BE_WRITE_KEY);
@@ -36,8 +37,8 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname+'/app/build/index.html'));
 });
 
-
 const PORT = process.env.ENV === 'STAGING' ? 8124 : 8123;
+
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
