@@ -239,7 +239,7 @@ h1 {
 
 .input-field.variant .input-text {
   width: 100%;
-  margin: 10px 20px;
+  /* margin: 10px 20px; */
   padding: 0px 10px;
   background-color: none;
   background-color: var(--secondary-bg-color);
@@ -251,6 +251,8 @@ h1 {
   color: black;
   margin-bottom: 20px;
 }
+
+
 
 .input-field:not(.variant) {
   flex-direction: row; /* Add this line */
