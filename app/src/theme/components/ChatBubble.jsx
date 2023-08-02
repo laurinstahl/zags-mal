@@ -65,7 +65,7 @@ export const ChatBubble = ({ profileImg, message, isUser, timestamp, hiddenMessa
   return (
     <Box display="flex" flexDirection="row">
       <Box marginRight="8px" marginLeft="16px" display="flex" flexDirection="row" alignItems="flex-start" marginTop="10px" >
-        <img style={{borderRadius: '50%'}} width="50px" height="50px" src={profileImg} alt="profile" className="chatbubble-image" />
+        <img style={{borderRadius: '50%'}} width="30px" height="30px" src={profileImg} alt="profile" className="chatbubble-image" />
       </Box>
       <div className={['chatbubble', color].join(' ')} {...props}>
         

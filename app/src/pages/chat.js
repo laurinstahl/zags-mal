@@ -5,7 +5,7 @@ import { useFeatureIsOn } from "@growthbook/growthbook-react";
 
 function Chat(){
   const [messages, setMessages] = React.useState([
-    { sender: 'ChatGPT', message: 'Hi, worüber willst du heute sprechen?', timestamp: new Date().toISOString(), profileImg:"https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ChatGPT_logo.svg/1200px-ChatGPT_logo.svg.png" }
+    { sender: 'ChatGPT', message: 'Hi, worüber willst du heute sprechen?', timestamp: new Date().toISOString(), profileImg:"img/avatar-gpt.png" }
   ]);
   const [userMessageCount, setUserMessageCount] = React.useState(1);
   const [hiddenMessages, setHiddenMessages] = React.useState([]);
@@ -137,16 +137,6 @@ function Chat(){
     setIsSpeaking(false);
   };
 
-  //Splash screen
-  const [splashScreenVisible, setSplashScreenVisible] = React.useState(true);
-
-  const handleStart = React.useCallback(() => {
-    setSplashScreenVisible(false);
-    if (voicesLoaded) {
-      startSpeech(messages[0].message);
-    }
-  }, [voicesLoaded, messages]);
-
   const messagesEndRef = React.useRef(null);
   //communication to chatgpt
   const [isLoading, setIsLoading] = React.useState(false);
@@ -161,9 +151,9 @@ function Chat(){
     setAbortController(newAbortController);
 
     // Add user's message to chat
-    const userMessage = { sender: 'User', message, timestamp: new Date().toISOString(), profileImg:"https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png" };
+    const userMessage = { sender: 'User', message, timestamp: new Date().toISOString(), profileImg:"img/avatar-user.png" };
     setMessages(prevMessages => prevMessages.concat(userMessage));
-    const loadingMessage = { sender: 'ChatGPT', message: '', timestamp: new Date().toISOString(), profileImg:"https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ChatGPT_logo.svg/1200px-ChatGPT_logo.svg.png", isLoading: true };
+    const loadingMessage = { sender: 'ChatGPT', message: '', timestamp: new Date().toISOString(), profileImg:"img/avatar-gpt.png", isLoading: true };
     setMessages(prevMessages => prevMessages.concat(loadingMessage));
     setIsLoading(true); // Set loading to true
     setShowOptionButtons(false);
@@ -171,6 +161,7 @@ function Chat(){
     // Send user's message to server and get response from ChatGPT
     // user message count
     setUserMessageCount(userMessageCount + 1);
+
     let apiEndpoint;
 
     if (window.location.hostname === "localhost" && window.location.port === "3000") {
@@ -198,7 +189,7 @@ function Chat(){
       setIsLoading(false); // Set loading to false
       setMessages(prevMessages => {
         let messagesWithoutLoading = prevMessages.slice(0, prevMessages.length - 1);
-        const chatGptMessage = { sender: 'ChatGPT', message: data.message, timestamp: new Date().toISOString(), profileImg:"https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ChatGPT_logo.svg/1200px-ChatGPT_logo.svg.png", isLoading: false };
+        const chatGptMessage = { sender: 'ChatGPT', message: data.message, timestamp: new Date().toISOString(), profileImg:"img/avatar-gpt.png", isLoading: false };
         return messagesWithoutLoading.concat(chatGptMessage);
       });
       setHiddenMessages(prevHiddenMessages => [...prevHiddenMessages, data.message]);  // Add the new message to hiddenMessages
@@ -223,17 +214,6 @@ function Chat(){
 
   return (
     <>    
-      {splashScreenVisible ? (
-        <div className="splash-screen">
-          <h1>Zag's mal</h1>
-          <button onClick={() => {
-            handleStart();
-            window.analytics.track('Los Gehts Clicked', {
-              variants: variants,
-            });
-            }}>Los geht's</button>        
-        </div>
-      ) : null}
     <div className="box">
       <Box className="refresh-box" display="flex" flexDirection="row" justifyContent="center">
         <RefreshButton onRefresh={handleRefresh} />
