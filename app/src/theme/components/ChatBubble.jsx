@@ -7,9 +7,10 @@ import { useFeatureIsOn } from "@growthbook/growthbook-react";
 /**
  * Primary UI component for user interaction
  */
-export const ChatBubble = ({ profileImg, message, isUser, timestamp, hiddenMessages, setHiddenMessages, isSpeaking, startSpeech, stopSpeech, speakingMessage, isLoading, isBlurVariant, ...props }) => {
+export const ChatBubble = ({ messageNumber, profileImg, message, isUser, timestamp, hiddenMessages, setHiddenMessages, isSpeaking, startSpeech, stopSpeech, speakingMessage, isLoading, isBlurVariant, isReplayVariant, ...props }) => {
   const color = isUser ? 'chatbubble-secondary' : 'chatbubble-primary';
   //handle loading dots
+  console.log(messageNumber,"messageNumber")
   const [loadingDots, setLoadingDots] = React.useState('...');
   React.useEffect(() => {
     if (isLoading) {
@@ -62,6 +63,8 @@ export const ChatBubble = ({ profileImg, message, isUser, timestamp, hiddenMessa
     );
   };
 
+  const showTooltip = [2, 4, 6].includes(messageNumber); // Assuming 'key' is the variable you want to match
+
   return (
     <Box display="flex" flexDirection="row">
       <Box marginRight="8px" marginLeft="16px" display="flex" flexDirection="row" alignItems="flex-start" marginTop="10px" >
@@ -69,12 +72,19 @@ export const ChatBubble = ({ profileImg, message, isUser, timestamp, hiddenMessa
       </Box>
       <div className={['chatbubble', color].join(' ')} {...props}>
         
-      <div onClick={handleClick} style={hiddenMessages.includes(message) && isBlurVariant ? blurStyle : null} >
+      <div style={{ position: 'relative' }} onClick={handleClick}>
+        <div style={hiddenMessages.includes(message) && isBlurVariant ? blurStyle : null}>
           {isLoading ? loadingDots : ''}
           {hiddenMessages.includes(message) ? (isBlurVariant ? <p>{message}</p> : <MessageSkeleton />) : <p>{message}</p>}
         </div>
+        {hiddenMessages.includes(message) && isBlurVariant && showTooltip && (
+          <div className="tooltip">
+            Tap to reveal
+          </div>
+        )}
+      </div>
         <Box display="flex" flexDirection="column" justifyContent="flex-end" height="100%">
-        {!isUser && !isLoading && (
+        {!isUser && !isLoading && isReplayVariant && (
           isSpeaking && speakingMessage === message
           ? <button style={{marginLeft:"10px"}} onClick={stopSpeech}>⏸️</button>
           : <button style={{marginLeft:"10px"}} onClick={() => startSpeech(message)}>⏯️</button>            
@@ -87,6 +97,7 @@ export const ChatBubble = ({ profileImg, message, isUser, timestamp, hiddenMessa
 };
 
 ChatBubble.propTypes = {
+  key: PropTypes.number.isRequired,
   /**
    * The message to be displayed
    */

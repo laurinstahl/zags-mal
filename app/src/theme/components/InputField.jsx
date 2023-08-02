@@ -7,7 +7,7 @@ import axios from 'axios'; // make sure to install and import axios
 /**
  * Input field with send and microphone button for user interaction
  */
-export const InputField = ({ onSend, isLoading, disabled, isVariant, ...props }) => {
+export const InputField = ({ onSend, isLoading, disabled, isInputVariant, ...props }) => {
   const [message, setMessage] = React.useState('');
   const [processing, setProcessing] = React.useState(false);
   const [recording, setRecording] = React.useState(false);
@@ -80,7 +80,7 @@ export const InputField = ({ onSend, isLoading, disabled, isVariant, ...props })
               apiEndpoint = "/api/transcribe";
           }
           const response = await axios.post(apiEndpoint, data);
-          setMessage(prevMessage => isVariant ? `${prevMessage} ${response.data.message.text}` : response.data.message.text);
+          setMessage(prevMessage => isInputVariant ? `${prevMessage} ${response.data.message.text}` : response.data.message.text);
         } catch (error) {
           console.error('Error sending audio file:', error);
         } finally {
@@ -116,21 +116,21 @@ export const InputField = ({ onSend, isLoading, disabled, isVariant, ...props })
   return (
     <Box p="16px">
       
-      <div className={`input-field ${isVariant ? "variant" : ""}`}>
+      <div className={`input-field ${isInputVariant ? "variant" : ""}`}>
         <div className="input-field-title">
           Speak & Send
         </div>
         <textarea
-          value={processing ? (isVariant ? message + loadingText : loadingText) : message}
+          value={processing ? (isInputVariant ? message + loadingText : loadingText) : message}
           ref={textareaRef}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyDown}
           className="input-text"
-          disabled={disabled || processing || isVariant}
+          disabled={disabled || processing || isInputVariant}
           {...props}
         />
-        <div className={`button-box ${isVariant ? "variant" : ""}`}>
-          {isVariant && message.trim() !== '' && // Check if there is content in the message
+        <div className={`button-box ${isInputVariant ? "variant" : ""}`}>
+          {isInputVariant && message.trim() !== '' && // Check if there is content in the message
             <button onClick={handleCancel} className="cancel-button">
               <img src="/img/cancel.svg" alt="Cancel" />
             </button>

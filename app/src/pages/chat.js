@@ -12,6 +12,7 @@ function Chat(){
   const isInputVariant = useFeatureIsOn("is_input_variant");
   const isCompatibilityVariant = useFeatureIsOn("is_compatibility_variant");
   const isBlurVariant = useFeatureIsOn("is_blur_variant");
+  const isReplayVariant = useFeatureIsOn("replay_button");
   const variants = [{"isBlurVariant":isBlurVariant},{"isInputVariant":isInputVariant},{"isCompatibilityVariant":isCompatibilityVariant}];
 
   //compatibility & setting user voice
@@ -242,6 +243,7 @@ function Chat(){
           {messages.slice(1).map((msg, index) => 
             <ChatBubble
               key={index+1} // adjust index to avoid key collision
+              messageNumber={index+1}
               isUser={msg.sender === 'User'}
               message={msg.message}
               timestamp={msg.timestamp}
@@ -253,13 +255,14 @@ function Chat(){
               stopSpeech={stopSpeech}
               speakingMessage={speakingMessage}
               isBlurVariant={isBlurVariant}
+              isReplayVariant={isReplayVariant}
               isLoading={index+1 === messages.length - 1 && isLoading} // Only pass isLoading if this is the last message
               />
           )}
         
         <div ref={messagesEndRef} />
       </div>
-      <InputField onSend={handleSend} disabled={isLoading} isVariant={isInputVariant} />
+      <InputField onSend={handleSend} disabled={isLoading} isInputVariant={isInputVariant} />
     </div>
     </>
   );
